@@ -1,19 +1,22 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
+    "target": "ES2020",
+    "module": "node16",
+    "lib": ["ES2020", "DOM"],
+    "jsx": "react",
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": true,
-    "declaration": true,
-    "outDir": "dist",
-    "rootDir": "src",
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
-    "jsx": "react-jsx",
-    "types": ["node"]
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
-
