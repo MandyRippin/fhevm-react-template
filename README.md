@@ -1,170 +1,365 @@
-# FHEVM React Template
+# Universal FHEVM SDK
 
-A minimal React frontend template for building FHEVM-enabled decentralized applications (dApps). This template provides a simple development interface for interacting with FHEVM smart contracts, specifically the `FHECounter.sol` contract.
+A framework-agnostic SDK for building privacy-preserving applications with Fully Homomorphic Encryption (FHE) on Ethereum.
 
-## 🚀 What is FHEVM?
+## Features
 
-FHEVM (Fully Homomorphic Encryption Virtual Machine) enables computation on encrypted data directly on Ethereum. This template demonstrates how to build dApps that can perform computations while keeping data private.
+- **Framework-agnostic core** - Works with any JavaScript framework
+- **React hooks integration** - Wagmi-like API for React applications
+- **TypeScript support** - Full type safety and IntelliSense
+- **Easy to use** - Get started in less than 10 lines of code
+- **Production ready** - Error handling, loading states, and comprehensive testing
 
-## ✨ Features
+## Quick Start
 
-- **🔐 FHEVM Integration**: Built-in support for fully homomorphic encryption
-- **⚛️ React + Next.js**: Modern, performant frontend framework
-- **🎨 Tailwind CSS**: Utility-first styling for rapid UI development
-- **🔗 RainbowKit**: Seamless wallet connection and management
-- **🌐 Multi-Network Support**: Works on both Sepolia testnet and local Hardhat node
-- **📦 Monorepo Structure**: Organized packages for SDK, contracts, and frontend
-
-## 📋 Prerequinextjss
-
-Before you begin, ensure you have:
-
-- **Node.js** (v18 or higher)
-- **pnpm** package manager
-- **MetaMask** browser extension
-- **Git** for cloning the repository
-
-## 🛠️ Quick Start
-
-### 1. Clone and Setup
+### Installation
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd fhevm-react-template
-
-# Initialize submodules (includes fhevm-hardhat-template)
-git submodule update --init --recursive
-
-# Install dependencies
-pnpm install
+npm install @fhevm/universal-sdk
 ```
 
-### 2. Environment Configuration
+### React Usage
 
-Set up your Hardhat environment variables by following the [FHEVM documentation](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup#set-up-the-hardhat-configuration-variables-optional):
+```tsx
+import { FhevmProvider, useFhevm, useEncryptedInput } from '@fhevm/universal-sdk';
 
-- `MNEMONIC`: Your wallet mnemonic phrase
-- `INFURA_API_KEY`: Your Infura API key for Sepolia
+function App() {
+  return (
+    <FhevmProvider config={{ provider: window.ethereum }}>
+      <YourApp />
+    </FhevmProvider>
+  );
+}
 
-### 3. Start Development Environment
+function YourApp() {
+  const { client, isInitialized } = useFhevm();
+  const { createInput, isLoading } = useEncryptedInput(contractAddress);
 
-**Option A: Local Development (Recommended for testing)**
+  const encryptAndSend = async () => {
+    const input = await createInput(userAddress);
+    const encrypted = input.add32(42);
+    const { handles, inputProof } = await encrypted.encrypt();
+
+    // Use with your contract
+    await contract.submitEncrypted(handles, inputProof);
+  };
+
+  return (
+    <button onClick={encryptAndSend} disabled={isLoading}>
+      {isLoading ? 'Encrypting...' : 'Submit Encrypted Data'}
+    </button>
+  );
+}
+```
+
+### Node.js Usage
+
+```typescript
+import { FhevmClient } from '@fhevm/universal-sdk';
+
+const client = new FhevmClient({
+  provider: yourProvider,
+  network: 'sepolia'
+});
+
+await client.init();
+
+const input = await client.createEncryptedInput(contractAddress, userAddress);
+const encrypted = input.add32(42);
+const { handles, inputProof } = await encrypted.encrypt();
+```
+
+## Architecture
+
+```
+┌─────────────────────────────────────────┐
+│         Application Layer               │
+│  (React, Next.js, Node.js, etc.)       │
+└──────────────┬──────────────────────────┘
+               │
+┌──────────────▼──────────────────────────┐
+│      Universal FHEVM SDK                │
+│                                          │
+│  ┌────────────┐      ┌────────────┐    │
+│  │   Core     │      │   React    │    │
+│  │  Client    │◄─────┤   Hooks    │    │
+│  └────────────┘      └────────────┘    │
+└──────────────┬──────────────────────────┘
+               │
+┌──────────────▼──────────────────────────┐
+│         fhevmjs Library                 │
+│    (Encryption/Decryption Core)         │
+└──────────────┬──────────────────────────┘
+               │
+┌──────────────▼──────────────────────────┐
+│      Ethereum Network                   │
+│    (Smart Contracts with FHE)           │
+└─────────────────────────────────────────┘
+```
+
+## Examples
+
+### Next.js Voting Application
+
+See [`examples/nextjs-voting/`](./examples/nextjs-voting/) for a complete anonymous voting application built with:
+- Next.js 14
+- Universal FHEVM SDK
+- MetaMask integration
+- Encrypted vote casting
+
+**Run the example:**
 
 ```bash
-# Terminal 1: Start local Hardhat node
-pnpm chain
-# RPC URL: http://127.0.0.1:8545 | Chain ID: 31337
-
-# Terminal 2: Deploy contracts to localhost
-pnpm deploy:localhost
-
-# Terminal 3: Start the frontend
-pnpm start
+cd examples/nextjs-voting
+npm install
+npm run dev
 ```
 
-**Option B: Sepolia Testnet**
+### React Basic Example
+
+See [`examples/react-basic/`](./examples/react-basic/) for a minimal encryption demo showing:
+- Basic SDK setup
+- Simple encryption workflow
+- Hook usage patterns
+
+**Run the example:**
 
 ```bash
-# Deploy to Sepolia testnet
-pnpm deploy:sepolia
-
-# Start the frontend
-pnpm start
+cd examples/react-basic
+npm install
+npm run dev
 ```
 
-### 4. Connect MetaMask
+## Core Concepts
 
-1. Open [http://localhost:3000](http://localhost:3000) in your browser
-2. Click "Connect Wallet" and select MetaMask
-3. If using localhost, add the Hardhat network to MetaMask:
-   - **Network Name**: Hardhat Local
-   - **RPC URL**: `http://127.0.0.1:8545`
-   - **Chain ID**: `31337`
-   - **Currency Symbol**: `ETH`
+### Fully Homomorphic Encryption (FHE)
 
-### ⚠️ Sepolia Production note
+FHE allows computations on encrypted data without decrypting it. This SDK provides easy access to FHE operations:
 
-- In production, `NEXT_PUBLIC_ALCHEMY_API_KEY` must be set (see `packages/nextjs/scaffold.config.ts`). The app throws if missing.
-- Ensure `packages/nextjs/contracts/deployedContracts.ts` points to your live contract addresses.
-- Optional: set `NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID` for better WalletConnect reliability.
-- Optional: add per-chain RPCs via `rpcOverrides` in `packages/nextjs/scaffold.config.ts`.
-
-## 🔧 Troubleshooting
-
-### Common MetaMask + Hardhat Issues
-
-When developing with MetaMask and Hardhat, you may encounter these common issues:
-
-#### ❌ Nonce Mismatch Error
-
-**Problem**: MetaMask tracks transaction nonces, but when you restart Hardhat, the node resets while MetaMask doesn't update its tracking.
-
-**Solution**:
-1. Open MetaMask extension
-2. Select the Hardhat network
-3. Go to **Settings** → **Advanced**
-4. Click **"Clear Activity Tab"** (red button)
-5. This resets MetaMask's nonce tracking
-
-#### ❌ Cached View Function Results
-
-**Problem**: MetaMask caches smart contract view function results. After restarting Hardhat, you may see outdated data.
-
-**Solution**:
-1. **Restart your entire browser** (not just refresh the page)
-2. MetaMask's cache is stored in extension memory and requires a full browser restart to clear
-
-> 💡 **Pro Tip**: Always restart your browser after restarting Hardhat to avoid cache issues.
-
-For more details, see the [MetaMask development guide](https://docs.metamask.io/wallet/how-to/run-devnet/).
-
-## 📁 Project Structure
-
-This template uses a monorepo structure with three main packages:
-
-```
-fhevm-react-template/
-├── packages/
-│   ├── fhevm-hardhat-template/    # Smart contracts & deployment
-│   ├── fhevm-sdk/                 # FHEVM SDK package
-│   └── nextjs/                      # React frontend application
-└── scripts/                       # Build and deployment scripts
+```solidity
+// Smart contract example
+contract PrivateVoting {
+    function vote(bytes32 encryptedVote, bytes calldata proof) public {
+        euint32 vote = TFHE.asEuint32(encryptedVote, proof);
+        // Process encrypted vote without revealing it
+        encryptedTally = TFHE.add(encryptedTally, vote);
+    }
+}
 ```
 
-### Key Components
+### Encrypted Types
 
-#### 🔗 FHEVM Integration (`packages/nextjs/hooks/fhecounter-example/`)
-- **`useFHECounterWagmi.tsx`**: Example hook demonstrating FHEVM contract interaction
-- Essential hooks for FHEVM-enabled smart contract communication
-- Easily copyable to any FHEVM + React project
+The SDK supports multiple encrypted data types:
 
-#### 🎣 Wallet Management (`packages/nextjs/hooks/helper/`)
-- MetaMask wallet provider hooks
-- Compatible with EIP-6963 standard
-- Easily adaptable for other wallet providers
+- `euint8` - 8-bit unsigned integer
+- `euint16` - 16-bit unsigned integer
+- `euint32` - 32-bit unsigned integer
+- `euint64` - 64-bit unsigned integer
+- `ebool` - Boolean value
 
-#### 🔧 Flexibility
-- Replace `ethers.js` with `Wagmi` or other React-friendly libraries
-- Modular architecture for easy customization
-- Support for multiple wallet providers
+### Privacy Model
 
-## 📚 Additional Resources
+1. **Client-side encryption** - Data is encrypted in the user's browser
+2. **On-chain computation** - Smart contracts process encrypted data
+3. **Selective decryption** - Only authorized parties can decrypt results
+4. **EIP-712 signatures** - Secure decryption authorization
 
-### Official Documentation
-- [FHEVM Documentation](https://docs.zama.ai/protocol/solidity-guides/) - Complete FHEVM guide
-- [FHEVM Hardhat Guide](https://docs.zama.ai/protocol/solidity-guides/development-guide/hardhat) - Hardhat integration
-- [Relayer SDK Documentation](https://docs.zama.ai/protocol/relayer-sdk-guides/) - SDK reference
-- [Environment Setup](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup#set-up-the-hardhat-configuration-variables-optional) - MNEMONIC & API keys
+## API Reference
 
-### Development Tools
-- [MetaMask + Hardhat Setup](https://docs.metamask.io/wallet/how-to/run-devnet/) - Local development
-- [React Documentation](https://reactjs.org/) - React framework guide
+### FhevmClient
 
-### Community & Support
-- [FHEVM Discord](https://discord.com/invite/zama) - Community support
-- [GitHub Issues](https://github.com/zama-ai/fhevm-react-template/issues) - Bug reports & feature requests
+Framework-agnostic client for FHEVM operations.
 
-## 📄 License
+```typescript
+const client = new FhevmClient(config);
+await client.init();
+```
 
-This project is licensed under the **BSD-3-Clause-Clear License**. See the [LICENSE](LICENSE) file for details.
+**Methods:**
+
+- `init()` - Initialize the client
+- `createEncryptedInput(contractAddress, userAddress)` - Create encrypted input
+- `decrypt(handle, contractAddress)` - Decrypt a value
+- `getPublicKey()` - Get encryption public key
+
+### React Hooks
+
+#### useFhevm()
+
+Access the initialized FHEVM client.
+
+```typescript
+const { client, isInitialized, error } = useFhevm();
+```
+
+#### useEncryptedInput(contractAddress)
+
+Create encrypted inputs for a contract.
+
+```typescript
+const { createInput, isLoading, error } = useEncryptedInput(contractAddress);
+```
+
+#### useDecrypt()
+
+Decrypt encrypted values.
+
+```typescript
+const { decrypt, isLoading, error } = useDecrypt();
+```
+
+See [docs/API.md](./docs/API.md) for complete API documentation.
+
+## Use Cases
+
+### Anonymous Voting
+
+Build voting systems where:
+- Votes are encrypted client-side
+- Tallying happens on encrypted data
+- Results can be decrypted after voting ends
+- Individual votes remain private
+
+### Private Auctions
+
+Create sealed-bid auctions where:
+- Bids are encrypted and hidden
+- Winner is determined on encrypted bids
+- Only the winner is revealed
+
+### Confidential Transactions
+
+Enable private financial operations:
+- Hidden transaction amounts
+- Encrypted balance updates
+- Selective disclosure
+
+## Development
+
+### Build the SDK
+
+```bash
+cd packages/fhevm-sdk
+npm install
+npm run build
+```
+
+### Run Tests
+
+```bash
+npm test
+```
+
+### Workspace Commands
+
+From the root directory:
+
+```bash
+# Build SDK
+npm run build:sdk
+
+# Run Next.js example
+npm run dev:nextjs
+
+# Run React example
+npm run dev:react
+```
+
+## Deployment
+
+See [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Deploy
+
+1. Build the SDK:
+```bash
+npm run build:sdk
+```
+
+2. Deploy example to Vercel:
+```bash
+cd examples/nextjs-voting
+vercel deploy
+```
+
+## Migration
+
+Migrating from fhevm-react-template v0? See [docs/MIGRATION.md](./docs/MIGRATION.md) for a step-by-step guide.
+
+## Demo Video
+
+A complete video demonstration is available in `demo.mp4` at the root of this repository.
+
+**Important**: The video file must be downloaded to your local machine to view it. Direct streaming from the repository is not supported.
+
+See [demo-info.md](./demo-info.md) for viewing instructions and demo content overview.
+
+## Contract Example
+
+The voting smart contract used in examples:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "fhevm/lib/TFHE.sol";
+
+contract AnonymousSportsVoting {
+    struct Candidate {
+        string name;
+        euint32 encryptedVotes;
+    }
+
+    mapping(uint256 => Candidate) public candidates;
+
+    function vote(uint256 candidateId, bytes32 encryptedVote, bytes calldata proof)
+        public
+    {
+        euint32 vote = TFHE.asEuint32(encryptedVote, proof);
+        candidates[candidateId].encryptedVotes =
+            TFHE.add(candidates[candidateId].encryptedVotes, vote);
+    }
+}
+```
+
+Full contract available in [`examples/nextjs-voting/contracts/`](./examples/nextjs-voting/contracts/).
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## Roadmap
+
+- [ ] Vue.js integration
+- [ ] Angular support
+- [ ] Svelte hooks
+- [ ] Additional encrypted operations
+- [ ] Performance optimizations
+- [ ] Batch encryption support
+
+## Resources
+
+- [Zama FHEVM Documentation](https://docs.zama.ai/fhevm)
+- [fhevmjs Library](https://github.com/zama-ai/fhevmjs)
+- [TFHE Solidity Library](https://github.com/zama-ai/fhevm)
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Support
+
+- **Documentation**: Check [docs/](./docs/) directory
+- **Examples**: See [examples/](./examples/) directory
+- **Issues**: Open a GitHub issue
+- **Discussions**: GitHub Discussions
+
+---
+
+**Universal FHEVM SDK** - Making privacy-preserving blockchain development simple and accessible.
