@@ -1,15 +1,17 @@
-# Anonymous Sports Voting - Next.js Example
+# FHEVM Next.js Complete Demo
 
-Complete Next.js application demonstrating the Universal FHEVM SDK with a full-featured privacy-preserving voting system.
+A comprehensive demonstration of the Universal FHEVM SDK showcasing all features for building privacy-preserving applications with Fully Homomorphic Encryption.
 
 ## Overview
 
-This example imports and extends the Anonymous Sports Voting dapp with full SDK integration, providing:
+This complete Next.js application demonstrates:
 
-- **Encrypted Voting**: Cast votes using Fully Homomorphic Encryption
-- **Admin Panel**: Manage candidates, events, and voter authorization
-- **Real-time Updates**: View current events and voting status
-- **Privacy Preservation**: All votes remain encrypted and private
+- **Core FHE Operations**: Encryption, decryption, and homomorphic computation
+- **SDK Integration**: Full implementation of all Universal FHEVM SDK features
+- **Real-World Use Cases**: Banking, healthcare, and voting examples
+- **Complete Component Library**: Reusable UI and FHE components
+- **API Routes**: Server-side FHE operation endpoints
+- **TypeScript Throughout**: Full type safety and IntelliSense support
 
 ## Features
 
@@ -108,16 +110,64 @@ contract.getEventCandidates(eventId)
 
 ```
 nextjs-voting/
-├── app/
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Main voting interface
-├── lib/
-│   └── contract-abi.ts     # Contract ABI and address
-├── contracts/
-│   └── AnonymousSportsVoting.sol  # Imported contract
-├── next.config.js          # Next.js configuration
-├── tsconfig.json           # TypeScript configuration
-└── package.json            # Dependencies
+├── src/
+│   ├── app/                    # Next.js 13+ App Router
+│   │   ├── layout.tsx          # Root layout with metadata
+│   │   ├── page.tsx            # Main application page
+│   │   ├── globals.css         # Global styles with Tailwind
+│   │   └── api/                # API routes for server-side operations
+│   │       ├── fhe/
+│   │       │   ├── route.ts         # Main FHE API endpoint
+│   │       │   ├── encrypt/route.ts # Encryption endpoint
+│   │       │   ├── decrypt/route.ts # Decryption endpoint
+│   │       │   └── compute/route.ts # Computation endpoint
+│   │       └── keys/route.ts        # Key management API
+│   │
+│   ├── components/             # React components
+│   │   ├── ui/                 # Reusable UI components
+│   │   │   ├── Button.tsx      # Styled button with loading states
+│   │   │   ├── Input.tsx       # Form input with validation
+│   │   │   └── Card.tsx        # Container card component
+│   │   ├── fhe/                # FHE-specific components
+│   │   │   ├── FHEProvider.tsx     # FHE context provider
+│   │   │   ├── EncryptionDemo.tsx  # Interactive encryption demo
+│   │   │   ├── ComputationDemo.tsx # Homomorphic computation demo
+│   │   │   └── KeyManager.tsx      # Key management UI
+│   │   └── examples/           # Real-world use case examples
+│   │       ├── BankingExample.tsx  # Private banking transfers
+│   │       └── MedicalExample.tsx  # Healthcare data privacy
+│   │
+│   ├── lib/                    # Core libraries and utilities
+│   │   ├── fhe/                # FHE integration layer
+│   │   │   ├── client.ts       # FHE client wrapper
+│   │   │   ├── server.ts       # Server-side FHE operations
+│   │   │   ├── keys.ts         # Key management utilities
+│   │   │   └── types.ts        # FHE-specific type definitions
+│   │   └── utils/              # Helper utilities
+│   │       ├── security.ts     # Security and validation
+│   │       └── validation.ts   # Input validation helpers
+│   │
+│   ├── hooks/                  # Custom React hooks
+│   │   ├── useFHE.ts           # Main FHE client hook
+│   │   ├── useEncryption.ts    # Encryption operations hook
+│   │   └── useComputation.ts   # Computation operations hook
+│   │
+│   └── types/                  # TypeScript type definitions
+│       ├── fhe.ts              # FHE-related types
+│       └── api.ts              # API request/response types
+│
+├── contracts/                  # Smart contract examples
+│   └── AnonymousSportsVoting.sol
+│
+├── lib/                        # Contract artifacts
+│   └── contract-abi.ts
+│
+├── package.json
+├── tsconfig.json
+├── tailwind.config.js
+├── postcss.config.js
+├── next.config.js
+└── README.md
 ```
 
 ## Key Components
