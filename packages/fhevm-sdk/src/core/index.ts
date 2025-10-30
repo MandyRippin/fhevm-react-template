@@ -1,6 +1,10 @@
-export * from "../internal/fhevm";
-export * from "../internal/RelayerSDKLoader";
-export * from "../internal/PublicKeyStorage";
-export * from "../internal/fhevmTypes";
-export * from "../internal/constants";
+/**
+ * Core FHEVM Module
+ *
+ * This module exports the core FhevmClient class and related types.
+ *
+ * @module core
+ */
 
+export { FhevmClient } from './fhevm';
+export type { FhevmClientConfig } from './fhevm';

@@ -1,0 +1,175 @@
+/**
+ * Decryption Utilities
+ *
+ * This module provides utility functions for decrypting and processing
+ * encrypted values from FHE-enabled smart contracts.
+ *
+ * @module utils/decryption
+ */
+
+import type { FhevmType } from '../types';
+
+/**
+ * Converts a decrypted bigint value to a number
+ *
+ * @param value - The bigint value to convert
+ * @param max - Optional maximum value for validation
+ * @returns The value as a number
+ * @throws {Error} If value exceeds safe integer range or max value
+ */
+export function bigintToNumber(value: bigint, max?: number): number {
+  if (value > Number.MAX_SAFE_INTEGER) {
+    throw new Error(`Value ${value} exceeds safe integer range`);
+  }
+
+  const num = Number(value);
+
+  if (max !== undefined && num > max) {
+    throw new Error(`Value ${num} exceeds maximum ${max}`);
+  }
+
+  return num;
+}
+
+/**
+ * Converts a decrypted bigint to a boolean
+ *
+ * @param value - The bigint value (0 or 1)
+ * @returns Boolean representation
+ * @throws {Error} If value is not 0 or 1
+ */
+export function bigintToBool(value: bigint): boolean {
+  if (value !== 0n && value !== 1n) {
+    throw new Error(`Invalid boolean value: ${value}. Expected 0 or 1.`);
+  }
+  return value === 1n;
+}
+
+/**
+ * Converts a decrypted bigint to a uint8
+ *
+ * @param value - The bigint value
+ * @returns Number between 0 and 255
+ * @throws {Error} If value is out of range
+ */
+export function bigintToUint8(value: bigint): number {
+  if (value < 0n || value > 255n) {
+    throw new Error(`Value ${value} out of uint8 range (0-255)`);
+  }
+  return Number(value);
+}
+
+/**
+ * Converts a decrypted bigint to a uint16
+ *
+ * @param value - The bigint value
+ * @returns Number between 0 and 65535
+ * @throws {Error} If value is out of range
+ */
+export function bigintToUint16(value: bigint): number {
+  if (value < 0n || value > 65535n) {
+    throw new Error(`Value ${value} out of uint16 range (0-65535)`);
+  }
+  return Number(value);
+}
+
+/**
+ * Converts a decrypted bigint to a uint32
+ *
+ * @param value - The bigint value
+ * @returns Number between 0 and 4294967295
+ * @throws {Error} If value is out of range
+ */
+export function bigintToUint32(value: bigint): number {
+  if (value < 0n || value > 4294967295n) {
+    throw new Error(`Value ${value} out of uint32 range (0-4294967295)`);
+  }
+  return Number(value);
+}
+
+/**
+ * Converts decrypted value to appropriate JavaScript type based on FHE type
+ *
+ * @param value - The decrypted bigint value
+ * @param type - The FHE type
+ * @returns Converted value in appropriate JavaScript type
+ *
+ * @example
+ * ```typescript
+ * const decrypted = await client.decrypt(handle, contractAddress);
+ * const value = convertDecryptedValue(decrypted, 'euint32'); // Returns number
+ * const flag = convertDecryptedValue(decrypted, 'ebool'); // Returns boolean
+ * ```
+ */
+export function convertDecryptedValue(
+  value: bigint,
+  type: FhevmType
+): number | boolean | bigint {
+  switch (type) {
+    case 'euint8':
+      return bigintToUint8(value);
+    case 'euint16':
+      return bigintToUint16(value);
+    case 'euint32':
+      return bigintToUint32(value);
+    case 'euint64':
+      return value; // Keep as bigint
+    case 'ebool':
+      return bigintToBool(value);
+    case 'eaddress':
+      return value; // Keep as bigint for addresses
+    default:
+      throw new Error(`Unknown FHE type: ${type}`);
+  }
+}
+
+/**
+ * Formats a decrypted value for display
+ *
+ * @param value - The bigint value
+ * @param type - The FHE type
+ * @returns Formatted string representation
+ */
+export function formatDecryptedValue(value: bigint, type: FhevmType): string {
+  const converted = convertDecryptedValue(value, type);
+
+  switch (type) {
+    case 'eaddress':
+      return `0x${value.toString(16).padStart(40, '0')}`;
+    case 'ebool':
+      return converted ? 'true' : 'false';
+    case 'euint64':
+      return value.toString();
+    default:
+      return converted.toString();
+  }
+}
+
+/**
+ * Decrypts multiple handles and returns their values
+ *
+ * @param decrypt - Decryption function
+ * @param handles - Array of encrypted handles
+ * @param contractAddress - Contract address
+ * @returns Promise resolving to array of decrypted values
+ */
+export async function decryptMultiple(
+  decrypt: (handle: bigint, contractAddress: string) => Promise<bigint>,
+  handles: bigint[],
+  contractAddress: string
+): Promise<bigint[]> {
+  return Promise.all(
+    handles.map((handle) => decrypt(handle, contractAddress))
+  );
+}
+
+/**
+ * Converts byte array to string
+ *
+ * @param bytes - Uint8Array or number array
+ * @returns Decoded string
+ */
+export function bytesToString(bytes: Uint8Array | number[]): string {
+  const uint8Array = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  return new TextDecoder().decode(uint8Array);
+}

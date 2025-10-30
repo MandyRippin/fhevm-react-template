@@ -99,13 +99,79 @@ const { handles, inputProof } = await encrypted.encrypt();
 
 ## Examples
 
-### Next.js Voting Application
+The `examples/` directory (also available as `templates/`) contains comprehensive demonstrations of the Universal FHEVM SDK.
 
-See [`examples/nextjs-voting/`](./examples/nextjs-voting/) for a complete anonymous voting application built with:
-- Next.js 14
-- Universal FHEVM SDK
-- MetaMask integration
-- Encrypted vote casting
+### Next.js Complete Demo
+
+**Location:** [`examples/nextjs-voting/`](./examples/nextjs-voting/)
+
+A feature-complete Next.js application showcasing all SDK capabilities:
+
+**Structure:**
+```
+nextjs-voting/
+├── src/
+│   ├── app/                    # Next.js 13+ App Router
+│   │   ├── layout.tsx          # Root layout
+│   │   ├── page.tsx            # Main application page
+│   │   ├── globals.css         # Global styles with Tailwind
+│   │   └── api/                # API routes
+│   │       ├── fhe/            # FHE operations
+│   │       │   ├── route.ts    # Main FHE API
+│   │       │   ├── encrypt/    # Encryption endpoint
+│   │       │   ├── decrypt/    # Decryption endpoint
+│   │       │   └── compute/    # Computation endpoint
+│   │       └── keys/           # Key management API
+│   │
+│   ├── components/             # React components
+│   │   ├── ui/                 # Base UI components
+│   │   │   ├── Button.tsx      # Reusable button component
+│   │   │   ├── Input.tsx       # Form input component
+│   │   │   └── Card.tsx        # Card container component
+│   │   ├── fhe/                # FHE-specific components
+│   │   │   ├── FHEProvider.tsx     # FHE context provider
+│   │   │   ├── EncryptionDemo.tsx  # Encryption demonstration
+│   │   │   ├── ComputationDemo.tsx # Computation demonstration
+│   │   │   └── KeyManager.tsx      # Key management UI
+│   │   └── examples/           # Use case examples
+│   │       ├── BankingExample.tsx  # Private banking demo
+│   │       └── MedicalExample.tsx  # Healthcare privacy demo
+│   │
+│   ├── lib/                    # Utility libraries
+│   │   ├── fhe/                # FHE integration
+│   │   │   ├── client.ts       # Client-side FHE operations
+│   │   │   ├── server.ts       # Server-side FHE operations
+│   │   │   ├── keys.ts         # Key management
+│   │   │   └── types.ts        # FHE type definitions
+│   │   └── utils/              # Utility functions
+│   │       ├── security.ts     # Security utilities
+│   │       └── validation.ts   # Input validation
+│   │
+│   ├── hooks/                  # Custom React hooks
+│   │   ├── useFHE.ts           # Main FHE hook
+│   │   ├── useEncryption.ts    # Encryption operations
+│   │   └── useComputation.ts   # Computation operations
+│   │
+│   └── types/                  # TypeScript definitions
+│       ├── fhe.ts              # FHE type interfaces
+│       └── api.ts              # API type definitions
+│
+├── contracts/                  # Smart contracts
+├── package.json
+├── tsconfig.json
+├── tailwind.config.js
+└── next.config.js
+```
+
+**Features:**
+- Complete SDK integration with all features
+- Encryption and decryption demos
+- Homomorphic computation examples
+- Real-world use cases (banking, healthcare)
+- Full TypeScript support
+- Tailwind CSS styling
+- API routes for server-side operations
+- Comprehensive component library
 
 **Run the example:**
 
@@ -115,9 +181,13 @@ npm install
 npm run dev
 ```
 
+Open [http://localhost:3000](http://localhost:3000) to see the complete demo.
+
 ### React Basic Example
 
-See [`examples/react-basic/`](./examples/react-basic/) for a minimal encryption demo showing:
+**Location:** [`examples/react-basic/`](./examples/react-basic/)
+
+A minimal encryption demo showing:
 - Basic SDK setup
 - Simple encryption workflow
 - Hook usage patterns
@@ -129,6 +199,36 @@ cd examples/react-basic
 npm install
 npm run dev
 ```
+
+### Anonymous Sports Voting (React Application)
+
+**Location:** [`examples/AnonymousSportsVoting/`](./examples/AnonymousSportsVoting/)
+
+A complete React TypeScript application demonstrating:
+- Anonymous encrypted voting with FHE
+- Vote tallying on encrypted data
+- Admin authorization system
+- Event management and lifecycle
+- Full SDK integration with custom hooks
+- Modern React component architecture
+
+**Features:**
+- Built with React 18 and TypeScript
+- Vite for fast development and building
+- Complete FHEVM SDK integration
+- Custom hooks for contract and event management
+- Professional component structure
+- Smart contract deployment scripts included
+
+**Run the example:**
+
+```bash
+cd examples/AnonymousSportsVoting
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to see the voting application.
 
 ## Core Concepts
 
@@ -234,6 +334,54 @@ Enable private financial operations:
 - Encrypted balance updates
 - Selective disclosure
 
+## Project Structure
+
+This repository follows a monorepo structure optimized for SDK development and demonstration:
+
+```
+fhevm-react-template/
+├── packages/                     # SDK packages
+│   └── fhevm-sdk/               # Universal FHEVM SDK
+│       ├── src/
+│       │   ├── core/            # Framework-agnostic core
+│       │   │   ├── fhevm.ts     # Core FHE client implementation
+│       │   │   └── index.ts     # Core exports
+│       │   ├── hooks/           # React hooks
+│       │   │   ├── useFhevm.ts
+│       │   │   ├── useEncryptedInput.ts
+│       │   │   ├── useDecrypt.ts
+│       │   │   └── index.ts
+│       │   ├── adapters/        # Framework adapters
+│       │   │   ├── react.ts     # React provider & context
+│       │   │   └── index.ts
+│       │   ├── utils/           # Utility functions
+│       │   │   ├── encryption.ts # Encryption helpers
+│       │   │   ├── decryption.ts # Decryption helpers
+│       │   │   └── index.ts
+│       │   ├── types/           # TypeScript definitions
+│       │   │   └── index.ts
+│       │   └── index.ts         # Main entry point
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── README.md
+│
+├── examples/                    # Example applications
+│   ├── nextjs-voting/          # Complete Next.js demo
+│   ├── react-basic/            # Basic React example
+│   └── AnonymousSportsVoting/  # React voting application
+│
+├── templates/                   # Symlink to examples/
+│
+├── docs/                        # Documentation
+│   ├── API.md                  # Complete API reference
+│   ├── DEPLOYMENT.md           # Deployment guide
+│   └── MIGRATION.md            # Migration guide
+│
+├── README.md                    # This file
+├── package.json                 # Root package configuration
+└── demo-info.md                 # Demo video information
+```
+
 ## Development
 
 ### Build the SDK
@@ -258,12 +406,30 @@ From the root directory:
 # Build SDK
 npm run build:sdk
 
-# Run Next.js example
+# Run Next.js complete demo
 npm run dev:nextjs
 
 # Run React example
 npm run dev:react
 ```
+
+### Development Workflow
+
+1. **SDK Development:**
+   ```bash
+   cd packages/fhevm-sdk
+   npm run dev  # Watch mode for TypeScript compilation
+   ```
+
+2. **Example Development:**
+   ```bash
+   cd examples/nextjs-voting
+   npm install
+   npm run dev
+   ```
+
+3. **Testing Changes:**
+   The examples use `file:../../packages/fhevm-sdk` so SDK changes are immediately reflected.
 
 ## Deployment
 
