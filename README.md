@@ -10,6 +10,8 @@ A framework-agnostic SDK for building privacy-preserving applications with Fully
 - **Easy to use** - Get started in less than 10 lines of code
 - **Production ready** - Error handling, loading states, and comprehensive testing
 
+[Live demo](https://anonymous-sports-voting.vercel.app/) [Demo video: demo.mp4]
+
 ## Quick Start
 
 ### Installation
